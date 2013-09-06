@@ -1,0 +1,41 @@
+﻿<#@ template language="C#" #>
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ parameter name="classFields" type="System.Collections.Generic.List<Sitecore.Data.Items.TemplateFieldItem>" #> 
+<#@ parameter name="namespaceName" type="System.String" #> 
+<#@ parameter name="usingNamespaces" type="System.String" #> 
+<#@ parameter name="className" type="System.String" #> 
+<#@ parameter name="classType" type="System.String" #> 
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Globalization" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ assembly name="$(TargetDir)Sitecore.Kernel.dll" #>
+<#@ import namespace="Sitecore.Data" #>
+<#@ import namespace="Sitecore.Data.Items" #>
+<#@ import namespace="Sitecore.Data.Fields" #>
+<#@ import namespace="Sitecore.T4Class.Generate.Module.BusinessLayer.Extentions" #>
+namespace <#= namespaceName #>
+{
+<#foreach (string oneUsing in usingNamespaces.Split(';')){#>
+<# if(!string.IsNullOrEmpty(oneUsing)) {#>
+	<#=oneUsing.Trim()#>;
+<#}#>
+<#}#>
+
+<# if(classType.Contains("Glass")) {#>
+	[SitecoreType]
+<#}#>
+	public class <#= className #>
+	{ 
+<#foreach (Sitecore.Data.Items.TemplateFieldItem field in classFields){#>
+<# if(classType.Contains("Glass")) {#>
+		[SitecoreField]
+<#}#>
+		public <# if(classType.Contains("Glass")) {#>virtual <#}#><#= field.GetFieldType().Name.TypeFormat() #> <#= field.Name.FieldNameFormat() #>{ get; set; }
+
+<#}#>
+	}
+}
+
